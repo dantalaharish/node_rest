@@ -8,9 +8,16 @@ const mongoose = require('mongoose')
 
 router.get('/', (req, res, next) =>
 {
-	res.status(200).json({
-		message : 'Handling GET requests from /products'
-	})	
+	Product.find()
+	.exec()
+	.then(docs =>{
+		console.log(docs);
+		res.status(200).json(docs)
+	})
+	.catch(err =>{
+		console.log(err);
+		res.status(500);
+	});	
 
 });
 
@@ -21,7 +28,9 @@ router.post('/', (req, res, next) =>
 		name: req.body.name,
 		price: req.body.price,
 	});
-	product.save().exec();
+	product.save().then(result => {
+		console.log(result);
+	});
 	res.status(200).json({
 		message : 'Handling POST requests from /products'
 	});	
@@ -34,7 +43,15 @@ router.get('/:productId', (req, res, next) =>
 	Product.findById(id)
 	.exec()
 	.then(doc => {
-		res.status(200).json(doc);
+		console.log("From database", doc);
+		if(doc)
+		{
+			res.status(200).json(doc);
+		}
+		else
+		{
+			res.status(404).json({messgae: 'No valid entery found'})
+		}
 	});	
 
 });
